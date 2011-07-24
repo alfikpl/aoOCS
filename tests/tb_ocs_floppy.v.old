@@ -1,0 +1,218 @@
+`timescale 10ns / 1ns
+
+module tb_ocs_floppy();
+
+reg clk_30;
+reg reset_n;
+
+reg [31:0] master_DAT_I;
+reg ACK_I;
+wire CYC_O;
+wire STB_O;
+wire WE_O;
+wire [31:2] ADR_O;
+wire [3:0] SEL_O;
+wire [31:0] master_DAT_O;
+
+reg CYC_I;
+reg STB_I;
+reg WE_I;
+reg [8:2] ADR_I;
+reg [3:0] SEL_I;
+reg [31:0] slave_DAT_I;
+wire ACK_O;
+
+reg na_dskbytr_read;
+wire [15:0] na_dskbytr;
+
+reg fl_mtr_n;
+reg [3:0] fl_sel_n;
+reg fl_side_n;
+reg fl_dir;
+reg fl_step_n;
+
+wire floppy_blk_irq;
+
+ocs_floppy ocs_floppy_inst(
+    .clk_30(clk_30),
+    .reset_n(reset_n),
+
+    // line counter
+    .line_start(1'b1),
+    
+    // management
+    .man_floppy_inserted(1'b1),
+    .man_floppy_sector(32'd600),
+    .floppy_error(),
+    
+    // WISHBONE master
+    .CYC_O(CYC_O),
+    .STB_O(STB_O),
+    .WE_O(WE_O),
+    .ADR_O(ADR_O),
+    .SEL_O(SEL_O),
+    .master_DAT_O(master_DAT_O),
+    .master_DAT_I(master_DAT_I),
+    .ACK_I(ACK_I),
+
+    // WISHBONE slave
+    .CYC_I(CYC_I),
+    .STB_I(STB_I),
+    .WE_I(WE_I),
+    .ADR_I(ADR_I),
+    .SEL_I(SEL_I),
+    .slave_DAT_I(slave_DAT_I),
+    .ACK_O(ACK_O),
+
+    // dma enable
+    .dma_con(16'hFFFF),
+    .adk_con(16'hFFFF),
+
+    .floppy_syn_irq(),
+    .floppy_blk_irq(floppy_blk_irq),
+
+    // Not Aligned address support
+        // DSKBYTR read not implemented here
+    .na_dskbytr_read(na_dskbytr_read),
+    .na_dskbytr(na_dskbytr),
+
+    // floppy CIA interface
+    .fl_rdy_n(),
+    .fl_tk0_n(),
+    .fl_wpro_n(),
+    .fl_chng_n(),
+    .fl_index_n(),
+
+    .fl_mtr_n(fl_mtr_n),
+    .fl_sel_n(fl_sel_n),
+    .fl_side_n(fl_side_n),
+    .fl_dir(fl_dir),
+    .fl_step_n(fl_step_n)
+);
+
+initial begin
+    clk_30 = 1'b0;
+    forever #5 clk_30 = ~clk_30;
+end
+
+integer i,j0,j1,j2,j3,j4,j5,j6,j7;
+integer read_complete;
+reg [511:0] string;
+reg [31:0] adr;
+reg [3:0] sel;
+reg [31:0] val;
+parameter [31:0]    STDIN = 32'h8000_0000,
+                    STDOUT = 32'h8000_0001;
+
+initial begin
+    $dumpfile("tb_ocs_floppy.vcd");
+    $dumpvars(0);
+    $dumpon();
+    
+    read_complete = 0;
+    
+    reset_n = 1'b0;
+    ACK_I = 1'b0;
+    #10 reset_n = 1'b1;
+    
+    //write register: adr=1, sel=2, val=3
+    forever begin
+        
+        string = 512'd0;
+        while(string[7:0] != "\n") begin
+            string = { string[503:0], 8'd0 };
+            string[7:0] = $fgetc(STDIN);
+        end
+$display("got: %s\n", string);        
+        j0 = $sscanf(string, "write register: adr=%h, sel=%h, val=%h", adr, sel, val);
+        j1 = $sscanf(string, "fl_mtr_n=%h", val);
+        j2 = $sscanf(string, "fl_sel_n=%h", val);
+        j3 = $sscanf(string, "fl_side_n=%h", val);
+        j4 = $sscanf(string, "fl_dir=%h", val);
+        j5 = $sscanf(string, "fl_step_n=%h", val);
+        j6 = $sscanf(string, "step=%d", val);
+        j7 = $sscanf(string, "memory: adr=%h, val=%h", adr, val);
+        
+        if(j0 != 3 && j1 != 1 && j2 != 1 && j3 != 1 && j4 != 1 && j5 != 1 && j6 != 1 && j7 != 2) begin
+            $display("error: read failed: j0=%d, j1=%d, j2=%d, j3=%d, j4=%d, j5=%d, j6=%d, j7=%d", j0,j1,j2,j3,j4,j5,j6,j7);
+            $finish_and_return(-1);
+        end
+        
+        #10 ;
+        
+        if(j1 == 1) fl_mtr_n = val;
+        if(j2 == 1) fl_sel_n = val;
+        if(j3 == 1) fl_side_n = val;
+        if(j4 == 1) fl_dir = val;
+        if(j5 == 1) fl_step_n = val;
+        if(j6 == 1) begin
+            if(val == 0) begin
+                $dumpflush();
+                $display("done");
+                $fflush(STDOUT);
+                $finish_and_return(val);
+            end
+            else begin
+                for(j6=0; j6<val; j6 = j6+1) #10 ;
+                $dumpflush();
+            end
+        end
+        
+        if(j0 == 3) begin
+            ADR_I = adr[8:2];
+            slave_DAT_I = val;
+            STB_I = 1'b1;
+            CYC_I = 1'b1;
+            WE_I = 1'b1;
+            SEL_I = sel;
+            
+            while(ACK_O == 1'b0) #10;
+            while(ACK_O == 1'b1) #10;
+            
+            STB_I = 1'b0;
+            CYC_I = 1'b0;
+        end
+        
+        if(j7 == 2 && read_complete == 1) begin
+            if({ADR_O, 2'b0} != adr) begin
+                $display("read memory address mismatch");
+                $fflush(STDOUT);
+                $finish_and_return(-1);
+            end
+            
+            #5
+            master_DAT_I = val;
+            ACK_I = 1'b1;
+            
+            #10
+            master_DAT_I = 32'd0;
+            ACK_I = 1'b0;
+            
+            #5 ;
+            read_complete = 0;
+        end
+        
+        if(CYC_O == 1'b1 && STB_O == 1'b1 && WE_O == 1'b0 && read_complete == 0) begin
+            $display("read memory: adr=%h", {ADR_O, 2'b0});
+            $fflush(STDOUT);
+            
+            read_complete = 1;
+        end
+        else if(CYC_O == 1'b1 && STB_O == 1'b1 && WE_O == 1'b1) begin
+            $display("write memory: adr=%h, sel=%h, val=%h", {ADR_O, 2'b0}, SEL_O, master_DAT_O);
+            $fflush(STDOUT);
+            
+            #5
+            ACK_I = 1'b1;
+            
+            #10
+            ACK_I = 1'b0;
+            
+            #5 ;
+        end
+        
+    end
+end
+
+endmodule
+
