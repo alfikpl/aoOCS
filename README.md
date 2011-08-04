@@ -86,6 +86,7 @@ Other Open-Source Amiga implementations include:
 * Lotus 2 runs correctly. Some sound problems in intro.
 * Warzone runs poor. Some major graphic problems.
 * More information about aoOCS software compatability is available at Operation.
+* July 2011: Project copied to (https://github.com/alfikpl/aoOCS). Further development of aoOCS will continue on github.
 
 ## Requirements
 
