@@ -17,18 +17,18 @@ aoOCS is not related in any way with Minimig - it is a new and independent Amiga
     - ao68000 OpenCores IP core is used as the aoOCS processor
 * All of the above components are WISHBONE revision B.3 compatible
 * The aoOCS contains the following additional components:
-** SD card controller written in HDL with DMA. Supports SDHC cards only.
-** 10/100 Mbit Ethernet controller written in HDL to send the current VGA frames (frame grabber)
-** HDL drivers for SSRAM, PS/2 keyboard, PS/2 mouse, audio codec, VGA DAC
+    - SD card controller written in HDL with DMA. Supports SDHC cards only.
+    - 10/100 Mbit Ethernet controller written in HDL to send the current VGA frames (frame grabber)
+    - HDL drivers for SSRAM, PS/2 keyboard, PS/2 mouse, audio codec, VGA DAC
 * aoOCS uses only one external memory: a SSRAM with 36-bit words and pipelined access. A video buffer with about 250KB is located SSRAM. Another 256KB are used by the ROM. All the rest memory can be used as Chip RAM.
 * The On-Screen-Display is implemented in HDL as a finite state machine. No additional controller/processor with firmware required to handle the SoC.
 * The following options are available on the On-Screen-Display:
-** select ROM file to load (only Amiga Kickstart v1.2 was tested)
-** enable or disable Joystick (keyboard arrow keys)
-** enable or disable floppy write protection
-** insert a floppy - select one from a list
-** eject an inserted floppy
-** reset the system
+    - select ROM file to load (only Amiga Kickstart v1.2 was tested)
+    - enable or disable Joystick (keyboard arrow keys)
+    - enable or disable floppy write protection
+    - insert a floppy - select one from a list
+    - eject an inserted floppy
+    - reset the system
 * The On-Screen-Display is independent of the running Amiga software. It is enabled and disabled by the Home key and controled by the keyboard arrow keys and the right CTRL key.
 * Only PAL timings are implemented.
 * The video output is VGA compatible: 640x480 at 70 Hz. A rather simple method is used to extend the 256 PAL horizontal lines to 480 VGA lines: all lines are doubled except for every 8th one.
