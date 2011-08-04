@@ -6,15 +6,15 @@ aoOCS is not related in any way with Minimig - it is a new and independent Amiga
 ## Features
 
 * The aoOCS SoC contains the following Amiga/OCS components:
-** blitter
-** copper
-** system control (interrupts)
-** video: bitplains, sprites, collision detection
-** audio: 4 channels, low-pass filter
-** user input: PS/2 mouse, PS/2 keyboard and joystick (keyboard arrow keys)
-** floppy: read and write ADF files directly from a SD card. Only the internal floppy drive is implemented
-** 8520 CIA
-** ao68000 OpenCores IP core is used as the aoOCS processor
+    - blitter
+    - copper
+    - system control (interrupts)
+    - video: bitplains, sprites, collision detection
+    - audio: 4 channels, low-pass filter
+    - user input: PS/2 mouse, PS/2 keyboard and joystick (keyboard arrow keys)
+    - floppy: read and write ADF files directly from a SD card. Only the internal floppy drive is implemented
+    - 8520 CIA
+    - ao68000 OpenCores IP core is used as the aoOCS processor
 * All of the above components are WISHBONE revision B.3 compatible
 * The aoOCS contains the following additional components:
 ** SD card controller written in HDL with DMA. Supports SDHC cards only.
@@ -100,8 +100,9 @@ Other Open-Source Amiga implementations include:
 ![Structure diagram](http://github.com/alfikpl/aoOCS/raw/master/doc/img/structure.png)
 
 ## Screenshots
+### Amiga Kickstart v1.2 bootstrap screen with aoOCS On-Screen-Display
 ![Amiga Kickstart v1.2 bootstrap screen with aoOCS On-Screen-Display](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_menu_no_floppy.png)
+### Amiga Workbench v1.2 screen
 ![Amiga Workbench v1.2 screen](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_wb12.png)
-![Wings of Fury](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_wings_of_fury.png "Wings of Fury")
-
-
+### Wings of Fury
+![Wings of Fury](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_wings_of_fury.png)
