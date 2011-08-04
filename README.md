@@ -102,6 +102,6 @@ Other Open-Source Amiga implementations include:
 ## Screenshots
 ![Amiga Kickstart v1.2 bootstrap screen with aoOCS On-Screen-Display](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_menu_no_floppy.png)
 ![Amiga Workbench v1.2 screen](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_wb12.png)
-![Wings of Fury](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_wings_of_fury.png Wings of Fury)
+![Wings of Fury](http://github.com/alfikpl/aoOCS/raw/master/doc/img/vga_wings_of_fury.png "Wings of Fury")
 
 
