@@ -59,6 +59,8 @@ assign ERR_O        = 1'b0;
 assign slave_DAT_O  = 32'd0;
 
 wire accepted_addresses =
+    1'b1;
+/*  // strict checking -- disabled
     ({ADR_I, 2'b00} >= 32'h00F00000 && {ADR_I, 2'b00} <= 32'h00F7FFFC) ||
     ({ADR_I, 2'b00} >= 32'h00E80000 && {ADR_I, 2'b00} <= 32'h00EFFFFC) ||
     // Lotus2
@@ -71,6 +73,7 @@ wire accepted_addresses =
     {ADR_I, 2'b00} == 32'h00DC003C ||
     {ADR_I, 2'b00} == 32'h00D8003C ||
     {ADR_I, 2'b00} == 32'hFFFFFFFC;
+*/
 
 always @(posedge CLK_I or negedge reset_n) begin
     if(reset_n == 1'b0) begin
